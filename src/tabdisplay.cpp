@@ -30,7 +30,7 @@ std::pair<int, int> TabDisplay::convert_to_screen_coords(point_t p, bool& out_of
     return {line * global.bar_height + p.y, ((bar - first_bar - line * global.bars_per_line) * tab.dt + p.x % tab.dt) * global.note_width};
 }
 
-void TabDisplay::move_cursor(int dy, int dx, bool keep_selection) {
+void TabDisplay::move_cursor(int dy, int dx) {
     cursor.x = std::max(cursor.x + dx, 0);
     cursor.y = std::max(std::min(cursor.y + dy, tab.strings - 1), 0);
     if (mode == 2) {
@@ -39,11 +39,8 @@ void TabDisplay::move_cursor(int dy, int dx, bool keep_selection) {
             tab.notes[i].string = std::max(std::min(tab.notes[i].string + dy, tab.strings - 1), 0);
         }
     } else {
-        if (!keep_selection) {
+        if (mode == 0 || mode == 2) {
             selection_start = cursor;
-            mode = 0;
-        } else {
-            mode = 1;
         }
     }
     update_screen();
@@ -163,10 +160,6 @@ static bool is_shift(int c) {
 	return (k >= 'A') && (k <= 'Z');
 }
 
-static bool is_ctrl(int c) {
-	return *keyname(c) == '^';
-}
-
 static bool is_number(int c) {
 	return (c >= '0') && (c <= '9');
 }
@@ -177,6 +170,14 @@ void TabDisplay::update_selection() {
         if (point_t(note.time, note.string).in_between(cursor, selection_start)) {
             selection.push_back(i);
         }
+    }
+}
+
+void TabDisplay::toggle_select_mode() {
+    if (mode == 0) {
+        mode = 1;
+    } else if (mode == 1) {
+        drop_selection();
     }
 }
 
@@ -204,32 +205,16 @@ void TabDisplay::handle_keypress(int c) {
     char v = get_value(c);
     switch(v) {
     case 'a':
-        if (is_ctrl(c)) {
-            move_cursor(0, -tab.dt, is_shift(c));
-        } else {
-            move_cursor(0, -1, is_shift(c));
-        }
+        move_cursor(0, is_shift(c) ? -tab.dt : -1);
         break;
     case 'd':
-        if (is_ctrl(c)) {
-            move_cursor(0, tab.dt, is_shift(c));
-        } else {
-            move_cursor(0, 1, is_shift(c));
-        }
+        move_cursor(0, is_shift(c) ? tab.dt : 1);
         break;
     case 'w':
-        if (is_ctrl(c)) {
-            move_cursor(0, -tab.dt * global.bars_per_line, is_shift(c));
-        } else {
-            move_cursor(-1, 0, is_shift(c));
-        }
+        move_cursor(is_shift(c) ? 0 : -1, is_shift(c) ? -tab.dt * global.bars_per_line : 0);
         break;
     case 's':
-        if (is_ctrl(c)) {
-            move_cursor(0, tab.dt * global.bars_per_line, is_shift(c));
-        } else {
-            move_cursor(1, 0, is_shift(c));
-        }
+        move_cursor(is_shift(c) ? 0 : 1, is_shift(c) ? tab.dt * global.bars_per_line : 0);
         break;
     case 'r':
         if (mode == 0) {
@@ -250,6 +235,10 @@ void TabDisplay::handle_keypress(int c) {
                 mode = 2;
             }
         }
+        break;
+    case 't':
+        toggle_select_mode();
+        break;
     }
 }
 

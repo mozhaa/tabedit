@@ -41,12 +41,13 @@ private:
 
 public:
     TabDisplay(Tab& tab, WINDOW* win, Global& global);
-    void move_cursor(int dy, int dx, bool keep_selection);
+    void move_cursor(int dy, int dx);
     void write(int n);
     void drop_selection();
     void show();
     void handle_keypress(int c);
     void show_save_entry(std::string filename);
+    void toggle_select_mode();
 };
 
 }

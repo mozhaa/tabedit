@@ -2,40 +2,39 @@
 
 #include <vector>
 #include <math.h>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 
 using json = nlohmann::json;
 
 namespace tabedit {
 
-struct Fraction {
-    int num;
-    int denom;
+// struct Fraction {
+//     int num;
+//     int denom;
 
-    Fraction(int num, int denom) : num(num), denom(denom) {}
+//     Fraction(int num, int denom) : num(num), denom(denom) {}
 
-    int count(int dt);
+//     int count(int dt);
 
-    // TODO: operator+-
-};
+//     // TODO: operator+-
+// };
 
 struct Note {
-    Fraction time;
+    // Fraction time;
+    int time;
     int string;
     int fret;
 
-    Note(Fraction time, int string, int fret) : time(time), string(string), fret(fret) {}
+    Note(int time, int string, int fret) : time(time), string(string), fret(fret) {}
 };
 
 class Tab {
-private:
-    int strings_num;
-    int dt;
-
 public:
+    int strings;
+    int dt;
     std::vector<Note> notes;
 
-    Tab(int strings_num = 6, int dt = 16) : strings_num(strings_num), dt(dt), notes({}) {}
+    Tab(int strings = 6, int dt = 16) : strings(strings), dt(dt), notes({}) {}
     Tab(json data);
 };
 

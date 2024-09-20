@@ -2,7 +2,6 @@
 
 #include <ncursesw/ncurses.h>
 #include <string>
-#include <fstream>
 
 namespace tabedit {
 

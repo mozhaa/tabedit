@@ -1,6 +1,11 @@
 #include "editor.h"
 #include "tab.h"
-#include <nlohmann/json.hpp>
+#include "tabdisplay.h"
+#include "keybindings.h"
+#include "json.hpp"
+#include "global.h"
+#include "colors.h"
+#include <fstream>
 
 using json = nlohmann::json;
 
@@ -15,29 +20,83 @@ static Tab from_file(std::string filename) {
     return Tab(data);
 }
 
+static char get_value (int c, bool lowercase = true) {
+	const char* kn = keyname(c);
+	while (*kn) {
+		if (*kn >= 'A' && *kn <= 'Z') {
+			return lowercase ? *kn - 'A' + 'a' : *kn;
+		} else if (*kn >= 'a' && *kn <= 'z') {
+			return *kn;	
+		} else {
+			++kn;
+		}
+	}
+	return 0;
+}
+
+static bool is_shift(int c) {
+	char k = get_value(c, false);
+	return (k >= 'A') && (k <= 'Z');
+}
+
+static bool is_ctrl(int c) {
+	return *keyname(c) == '^';
+}
+
 void run(std::string filename) {
     Tab tab = from_file(filename);
-    initscr();
+	initscr();
     raw();
     noecho();
-    printw("Type any character to see it in bold\n");
-	int ch = getch();			/* If raw() hadn't been called
-					 * we have to press enter before it
-					 * gets to the program 		*/
-	if(ch == KEY_F(1))		/* Without keypad enabled this will */
-		printw("F1 Key pressed");/*  not get to us either	*/
-					/* Without noecho() some ugly escape
-					 * charachters might have been printed
-					 * on screen			*/
-	else
-	{	printw("The pressed key is ");
-		attron(A_BOLD);
-		printw("%c", ch);
-		attroff(A_BOLD);
+	cbreak();
+	curs_set(0);
+	init_colors();
+	Global global(stdscr, tab);
+	WINDOW* win = newwin(global.height, global.width, global.winy, global.winx);
+	default_window(win);
+	TabDisplay display(tab, win, global);
+	refresh();
+
+	bool running = true;
+	while (running) {
+		display.show();
+		int c = wgetch(win);
+		int v = get_value(c);
+		switch (v) {
+		case K_EXIT:
+			running = false;
+			break;
+		case K_LEFT:
+			if (is_ctrl(c)) {
+				display.move_cursor(0, -tab.dt, is_shift(c));
+			} else {
+				display.move_cursor(0, -1, is_shift(c));
+			}
+			break;
+		case K_RIGHT:
+			if (is_ctrl(c)) {
+				display.move_cursor(0, tab.dt, is_shift(c));
+			} else {
+				display.move_cursor(0, 1, is_shift(c));
+			}
+			break;
+		case K_UP:
+			if (is_ctrl(c)) {
+				display.move_cursor(0, -tab.dt * global.bars_per_line, is_shift(c));
+			} else {
+				display.move_cursor(-1, 0, is_shift(c));
+			}
+			break;
+		case K_DOWN:
+			if (is_ctrl(c)) {
+				display.move_cursor(0, tab.dt * global.bars_per_line, is_shift(c));
+			} else {
+				display.move_cursor(1, 0, is_shift(c));
+			}
+			break;
+		}
 	}
-	refresh();			/* Print it on to the real screen */
-    	getch();			/* Wait for user input */
-	endwin();			/* End curses mode		  */
+	endwin();
 }
 
 }

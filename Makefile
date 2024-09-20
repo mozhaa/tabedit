@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O2 -g -Wall -Werror -std=c++11 -Iinclude 
+CXXFLAGS = -O2 -g -Wall -Werror -std=c++17 -Iinclude 
 LDFLAGS = -I/usr/local/include -L/usr/local/lib -lncursesw
 
 EXE = tabedit

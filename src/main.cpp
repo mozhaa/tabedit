@@ -1,5 +1,4 @@
 #include "editor.h"
-#include <fstream>
 #include <string>
 
 using namespace std;

@@ -56,6 +56,14 @@ void Tab::delete_selected(std::vector<size_t> selection) {
     notes = new_notes;
 }
 
+void Tab::copy_selected(std::vector<size_t> selection) {
+    std::vector<Note> copied_notes = {};
+    for (auto i : selection) {
+        copied_notes.push_back(notes[i]);
+    }
+    notes.insert(notes.end(), copied_notes.begin(), copied_notes.end());
+}
+
 void Tab::set_note(Note n) {
     for (auto& note : notes) {
         if (note.string == n.string && note.time == n.time) {

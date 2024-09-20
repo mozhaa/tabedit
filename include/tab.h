@@ -27,6 +27,7 @@ public:
     void overwrite_by_selected(std::vector<size_t> selection);
     void delete_on(int x, int y);
     void delete_selected(std::vector<size_t> selection);
+    void copy_selected(std::vector<size_t> selection);
     std::string save() const;
     Tab(std::string filename);
     Tab(int strings = 6, int dt = 16) : strings(strings), dt(dt), notes({}) {}

@@ -171,6 +171,15 @@ static bool is_number(int c) {
 	return (c >= '0') && (c <= '9');
 }
 
+void TabDisplay::update_selection() {
+    for (std::size_t i = 0; i < tab.notes.size(); ++i) {
+        auto& note = tab.notes[i];
+        if (point_t(note.time, note.string).in_between(cursor, selection_start)) {
+            selection.push_back(i);
+        }
+    }
+}
+
 void TabDisplay::handle_keypress(int c) {
     if (is_number(c)) {
         write(c - '0');
@@ -179,12 +188,7 @@ void TabDisplay::handle_keypress(int c) {
     if (c == ' ') {
         // selection action
         if (mode == 1 || mode == 0) {
-            for (std::size_t i = 0; i < tab.notes.size(); ++i) {
-                auto& note = tab.notes[i];
-                if (point_t(note.time, note.string).in_between(cursor, selection_start)) {
-                    selection.push_back(i);
-                }
-            }
+            update_selection();
             if (selection.size() != 0) {
                 mode = 2;
                 selection_start = cursor;
@@ -237,6 +241,15 @@ void TabDisplay::handle_keypress(int c) {
             mode = 0;
         }
         break;
+    case 'c':
+        if (mode == 1) {
+            update_selection();
+            if (selection.size() != 0) {
+                tab.copy_selected(selection);
+                selection_start = cursor;
+                mode = 2;
+            }
+        }
     }
 }
 

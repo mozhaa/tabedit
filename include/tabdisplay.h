@@ -37,6 +37,7 @@ private:
     std::pair<int, int> convert_to_screen_coords(point_t p, bool& out_of_screen) const;
     void print_save_entry();
     void clear_entry();
+    void update_selection();
 
 public:
     TabDisplay(Tab& tab, WINDOW* win, Global& global);

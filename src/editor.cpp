@@ -29,6 +29,7 @@ void run(std::string filename) {
 	while (running) {
 		display.show();
 		int c = wgetch(win);
+		std::string new_filename;
 		switch (c) {
 		case K_EXIT:
 			running = false;
@@ -36,6 +37,11 @@ void run(std::string filename) {
 		case 'e':
 			// save
 			display.show_save_entry(tab.save());
+			break;
+		case 'f':
+			new_filename = display.get_new_filename();
+			tab.fork(new_filename);
+			display.show_save_entry(new_filename);
 			break;
 		default:
 			display.handle_keypress(c);

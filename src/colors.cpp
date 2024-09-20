@@ -17,6 +17,7 @@ void init_colors() {
     init_color(C_BW_0900, 900, 900, 900);
     init_color(C_BW_1000, 1000, 1000, 1000);
     init_color(C_YELLOW, 0, 1000, 1000);
+    init_color(C_LIGHT_YELLOW, 600, 1000, 1000);
     init_color(C_PINK, 1000, 300, 500);
 
     init_pair(CP_MAIN_1, C_FG, C_BG_1);
@@ -29,6 +30,8 @@ void init_colors() {
     init_pair(CP_CURSOR, C_BG, C_FG);
     init_pair(CP_SELECTION, C_BG, C_BW_0900);
     init_pair(CP_SELECTED_NOTE, C_YELLOW, C_BW_0400);
+    init_pair(CP_HL_CURSOR, C_BW_0000, C_LIGHT_YELLOW);
+    init_pair(CP_HL_SELECTION, C_BW_0100, C_LIGHT_YELLOW);
 
     default_window(stdscr);
 }

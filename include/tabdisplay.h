@@ -48,6 +48,7 @@ public:
     void handle_keypress(int c);
     void show_save_entry(std::string filename);
     void toggle_select_mode();
+    std::string get_new_filename();
 };
 
 }

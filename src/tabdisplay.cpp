@@ -68,10 +68,10 @@ void TabDisplay::write(int value) {
 
 unsigned int TabDisplay::get_colorpair(point_t p, bool is_note = false) const {
     if (p == cursor) {
-        return COLOR_PAIR(CP_CURSOR);
+        return (mode == 1) ? COLOR_PAIR(CP_HL_CURSOR) : COLOR_PAIR(CP_CURSOR);
     }
     if (p.in_between(cursor, selection_start) && mode == 1) {
-        return COLOR_PAIR(CP_SELECTION);
+        return (mode == 1) ? COLOR_PAIR(CP_HL_SELECTION) : COLOR_PAIR(CP_SELECTION);
     }
     if (p.x % tab.dt == 0) {
         return is_note ? COLOR_PAIR(CP_NOTE_1) : COLOR_PAIR(CP_MAIN_1);
@@ -98,6 +98,7 @@ void TabDisplay::show() {
             mvwprintw(win, sy, sx, "%s", std::string(global.note_width, '-').c_str());
         }
     }
+    wattron(win, A_BOLD);
     for (auto note : tab.notes) {
         bool out_of_screen;
         point_t p = {note.time, note.string};
@@ -108,7 +109,7 @@ void TabDisplay::show() {
         wattron(win, get_colorpair(p, true));
         mvwprintw(win, coords.first, coords.second, "%*d", global.note_width, note.fret);
     }
-    wattron(win, COLOR_PAIR(CP_DEFAULT) | A_BOLD);
+    wattron(win, COLOR_PAIR(CP_DEFAULT));
     for (int bar = first_bar; bar < first_bar + global.bars; ++bar) {
         int lines = (bar - first_bar) / global.bars_per_line;
         int number_in_line = (bar - first_bar) % global.bars_per_line;
@@ -188,12 +189,16 @@ void TabDisplay::handle_keypress(int c) {
     }
     if (c == ' ') {
         // selection action
-        if (mode == 1 || mode == 0) {
+        if (mode == 0) {
+            toggle_select_mode();
+        } else if (mode == 1) {
             update_selection();
             if (selection.size() != 0) {
                 mode = 2;
-                selection_start = cursor;
+            } else {
+                mode = 0;
             }
+            selection_start = cursor;
         } else if (mode == 2) {
             tab.overwrite_by_selected(selection);
             selection = {};
@@ -234,10 +239,9 @@ void TabDisplay::handle_keypress(int c) {
                 selection_start = cursor;
                 mode = 2;
             }
+        } else if (mode == 2) {
+            tab.copy_selected(selection);
         }
-        break;
-    case 't':
-        toggle_select_mode();
         break;
     }
 }
@@ -257,6 +261,17 @@ void TabDisplay::print_save_entry() {
 void TabDisplay::show_save_entry(std::string filename) {
     save_entry_show = true;
     save_entry_filename = filename;
+}
+
+std::string TabDisplay::get_new_filename() {
+    std::string new_filename(100, 0);
+    echo();
+    curs_set(1);
+    wmove(win, global.height - 1, 0);
+    wgetstr(win, new_filename.data());
+    noecho();
+    curs_set(0);
+    return new_filename;
 }
 
 TabDisplay::TabDisplay(Tab& tab, WINDOW* win, Global& global) : tab(tab), win(win), global(global) {

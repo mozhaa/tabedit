@@ -109,4 +109,9 @@ std::string Tab::save() const {
     return filename;
 }
 
+void Tab::fork(std::string new_filename) {
+    filename = new_filename;
+    save();
+}
+
 }

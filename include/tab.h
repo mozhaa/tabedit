@@ -29,6 +29,7 @@ public:
     void delete_selected(std::vector<size_t> selection);
     void copy_selected(std::vector<size_t> selection);
     std::string save() const;
+    void fork(std::string new_filename);
     Tab(std::string filename);
     Tab(int strings = 6, int dt = 16) : strings(strings), dt(dt), notes({}) {}
 

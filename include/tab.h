@@ -8,19 +8,7 @@ using json = nlohmann::json;
 
 namespace tabedit {
 
-// struct Fraction {
-//     int num;
-//     int denom;
-
-//     Fraction(int num, int denom) : num(num), denom(denom) {}
-
-//     int count(int dt);
-
-//     // TODO: operator+-
-// };
-
 struct Note {
-    // Fraction time;
     int time;
     int string;
     int fret;
@@ -33,9 +21,17 @@ public:
     int strings;
     int dt;
     std::vector<Note> notes;
+    std::string filename;
 
+    void set_note(Note n);
+    void overwrite_by_selected(std::vector<size_t> selection);
+    void delete_on(int x, int y);
+    void delete_selected(std::vector<size_t> selection);
+    std::string save() const;
+    Tab(std::string filename);
     Tab(int strings = 6, int dt = 16) : strings(strings), dt(dt), notes({}) {}
-    Tab(json data);
+
+private:
 };
 
 }

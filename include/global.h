@@ -24,6 +24,8 @@ private:
     int _bars_per_line;
     int _lines;
     int _bars;
+    int _write_timeout = 800;
+    int _max_fret = 24;
 
 public:
     Global(WINDOW* win, Tab& tab);
@@ -43,6 +45,8 @@ public:
     const int& bars_per_line = _bars_per_line;
     const int& lines = _lines;
     const int& bars = _bars;
+    const int& write_timeout = _write_timeout;
+    const int& max_fret = _max_fret;
 };
 
 }

@@ -1,6 +1,7 @@
 #include "tabdisplay.h"
 #include "colors.h"
 #include <chrono>
+#include <sstream>
 
 namespace tabedit {
 
@@ -74,15 +75,33 @@ unsigned int TabDisplay::get_colorpair(point_t p, bool is_note = false) const {
         return (mode == 1) ? COLOR_PAIR(CP_HL_SELECTION) : COLOR_PAIR(CP_SELECTION);
     }
     if (p.x % tab.dt == 0) {
-        return is_note ? COLOR_PAIR(CP_NOTE_1) : COLOR_PAIR(CP_MAIN_1);
+        return is_note ? COLOR_PAIR(CP_BAR_EDGE_NOTE) : COLOR_PAIR(CP_BAR_EDGE);
     }
-    if (p.x % 2 == 0) {
-        return is_note ? COLOR_PAIR(CP_NOTE_2) : COLOR_PAIR(CP_MAIN_2);
+    if ((p.x / 4) % 2 == 0) {
+        if (p.x % 2 == 0) {
+            return is_note ? COLOR_PAIR(CP_EVEN_1_NOTE) : COLOR_PAIR(CP_EVEN_1);
+        }
+        if (p.x % 2 == 1) {
+            return is_note ? COLOR_PAIR(CP_EVEN_2_NOTE) : COLOR_PAIR(CP_EVEN_2);
+        }    
     }
-    if (p.x % 2 == 1) {
-        return is_note ? COLOR_PAIR(CP_NOTE_3) : COLOR_PAIR(CP_MAIN_3);
+    if ((p.x / 4) % 2 == 1) {
+        if (p.x % 2 == 0) {
+            return is_note ? COLOR_PAIR(CP_ODD_1_NOTE) : COLOR_PAIR(CP_ODD_1);
+        }
+        if (p.x % 2 == 1) {
+            return is_note ? COLOR_PAIR(CP_ODD_2_NOTE) : COLOR_PAIR(CP_ODD_2);
+        }    
     }
     return COLOR_PAIR(CP_DEFAULT);
+}
+
+static std::string repeat_n(std::string s, int n) {
+    std::stringstream ss;
+    for (; n > 0; --n) {
+        ss << s;
+    }
+    return ss.str();
 }
 
 void TabDisplay::show() {
@@ -95,7 +114,7 @@ void TabDisplay::show() {
                 continue;
             }
             wattron(win, get_colorpair(p));
-            mvwprintw(win, sy, sx, "%s", std::string(global.note_width, '-').c_str());
+            mvwprintw(win, sy, sx, "%s", repeat_n(DASH_SYMBOL, global.note_width).c_str());
         }
     }
     wattron(win, A_BOLD);

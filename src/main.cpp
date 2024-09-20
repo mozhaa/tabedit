@@ -1,5 +1,6 @@
 #include "editor.h"
 #include <string>
+#include <locale.h>
 
 using namespace std;
 
@@ -8,6 +9,7 @@ void show_usage() {
 }
 
 int main(int argc, char* argv[]) {
+    setlocale(LC_ALL, "");
     if (argc != 2) {
         show_usage();
         return 1;

@@ -6,6 +6,8 @@
 
 namespace tabedit {
 
+#define DASH_SYMBOL "―"
+
 class TabDisplay {
 private:
     Tab& tab;

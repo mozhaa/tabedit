@@ -19,10 +19,15 @@ namespace tabedit {
 #define C_YELLOW 12
 #define C_PINK 13
 #define C_LIGHT_YELLOW 14
+#define C_EVEN_1_BG 15
+#define C_EVEN_2_BG 16
+#define C_ODD_1_BG 17
+#define C_ODD_2_BG 18
+#define C_BAR_EDGE_BG 19
 
 // Named colors
 #define C_BG C_BW_0000
-#define C_FG C_BW_1000
+#define C_FG C_BW_0400
 #define C_BG_1 C_BW_0300
 #define C_BG_2 C_BW_0200
 #define C_BG_3 C_BW_0100
@@ -40,6 +45,16 @@ namespace tabedit {
 #define CP_SELECTED_NOTE 10
 #define CP_HL_CURSOR 11
 #define CP_HL_SELECTION 12
+#define CP_BAR_EDGE 13
+#define CP_EVEN_1 14
+#define CP_EVEN_2 15
+#define CP_ODD_1 16
+#define CP_ODD_2 17
+#define CP_EVEN_1_NOTE 18
+#define CP_EVEN_2_NOTE 19
+#define CP_ODD_1_NOTE 20
+#define CP_ODD_2_NOTE 21
+#define CP_BAR_EDGE_NOTE 22
 
 void init_colors();
 void default_window(WINDOW* win);

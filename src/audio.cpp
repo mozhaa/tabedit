@@ -7,7 +7,7 @@
 namespace tabedit {
 
 static int get_milliseconds(int time, int dt, float bpm) {
-    return 60000.f * time / bpm / dt;
+    return 4 * 60000.f * time / bpm / dt;
 }
 
 static void sleep(int time, int dt, float bpm, std::ofstream& debug, int string) {

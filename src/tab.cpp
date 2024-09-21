@@ -1,11 +1,8 @@
 #include "tab.h"
 #include <fstream>
+#include <map>
 
 namespace tabedit {
-
-// int Fraction::count(int dt) {
-//     return floor((float)num * dt / denom);
-// }
 
 void Tab::overwrite_by_selected(std::vector<size_t> selection) {
     std::vector<Note> new_notes = {};
@@ -74,6 +71,26 @@ void Tab::set_note(Note n) {
     notes.push_back(n);
 }
 
+static std::map<std::string, int> letters = {
+    {"A", -3},
+    {"A#", -2},
+    {"Bb", -2},
+    {"B", -1},
+    {"C", 0},
+    {"C#", 1},
+    {"Db", 1},
+    {"D", 2},
+    {"D#", 3},
+    {"Eb", 3},
+    {"E", 4},
+    {"F", 5},
+    {"F#", 6},
+    {"Gb", 6},
+    {"G", 7},
+    {"G#", 8},
+    {"Ab", 8}
+};
+
 Tab::Tab(std::string filename) : filename(filename) {
     std::ifstream f(filename);
     if (f.fail()) {
@@ -82,6 +99,13 @@ Tab::Tab(std::string filename) : filename(filename) {
     json data = json::parse(f);
     strings = data["strings"];
     dt = data["dt"];
+    bpm = data["bpm"];
+    tuning = std::vector<int>(strings, 0);
+    for (int i = 0; i < strings; ++i) {
+        std::string letter = data["tuning"][i]["letter"];
+        int number = data["tuning"][i]["number"];
+        tuning[i] = letters[letter] + number * 12;
+    }
     notes = {};
     for (auto note : data["notes"]) {
         notes.push_back(Note(note["time"], note["string"], note["fret"]));

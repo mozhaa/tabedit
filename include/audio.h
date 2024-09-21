@@ -29,11 +29,11 @@ class TabPlayer {
     // debug
     std::ofstream debug;
     
-    void play_string(int string, int min_time, int max_time, int tuning, int dt, int bpm);
+    void play_string(int string, int min_time, int max_time, int tuning, int dt, float bpm);
 
 public:
     TabPlayer(std::string soundfont_filename, int strings);
-    void start(std::vector<Note> _notes, std::vector<int> tuning, int dt, int bpm, int min_time = 0, int max_time = 1000000);
+    void start(std::vector<Note> _notes, std::vector<int> tuning, int dt, float bpm, int min_time = 0, int max_time = 1000000);
     void stop();
 };
 

@@ -6,16 +6,16 @@
 
 namespace tabedit {
 
-static int get_milliseconds(int time, int dt, int bpm) {
+static int get_milliseconds(int time, int dt, float bpm) {
     return 60000.f * time / bpm / dt;
 }
 
-static void sleep(int time, int dt, int bpm, std::ofstream& debug, int string) {
+static void sleep(int time, int dt, float bpm, std::ofstream& debug, int string) {
     if (string == 1) debug << "sleeping " << get_milliseconds(time, dt, bpm) << "ms" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(get_milliseconds(time, dt, bpm)));
 }
 
-void TabPlayer::play_string(int string, int min_time, int max_time, int tuning, int dt, int bpm) {
+void TabPlayer::play_string(int string, int min_time, int max_time, int tuning, int dt, float bpm) {
     if (string == 1) debug << "Thread #" << string << ": play_string()" << std::endl;
     if (notes[string].size() == 0) {
         return;
@@ -52,7 +52,7 @@ TabPlayer::TabPlayer(std::string samples_filename, int strings) : strings(string
     fclose(samples_file);
 }
 
-void TabPlayer::start(std::vector<Note> _notes, std::vector<int> tuning, int dt, int bpm, int min_time, int max_time) {
+void TabPlayer::start(std::vector<Note> _notes, std::vector<int> tuning, int dt, float bpm, int min_time, int max_time) {
     debug << "start()" << std::endl;
     if (playing) {
         stop();
@@ -70,6 +70,7 @@ void TabPlayer::start(std::vector<Note> _notes, std::vector<int> tuning, int dt,
         });
     }
     debug << "Sorted all vectors" << std::endl;
+    debug << tuning[0] << " " << tuning[1] << " " << tuning[2] << " " << tuning[3] << std::endl;
     playing = true;
     for (int i = 0; i < strings; ++i) {
         debug << "Starting thread #" << i << std::endl;

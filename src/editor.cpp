@@ -46,7 +46,7 @@ void run(std::string filename) {
 			display.show_save_entry(new_filename);
 			break;
 		case 'p':
-			player.start(tab.notes, std::vector<int>(tab.strings, 60), tab.dt, 40);
+			player.start(tab.notes, tab.tuning, tab.dt, tab.bpm);
 			break;
 		case 'o':
 			player.stop();

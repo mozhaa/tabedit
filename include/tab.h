@@ -20,6 +20,8 @@ class Tab {
 public:
     int strings;
     int dt;
+    float bpm;
+    std::vector<int> tuning;
     std::vector<Note> notes;
     std::string filename;
 

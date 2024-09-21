@@ -6,7 +6,6 @@
 #include <thread>
 #include <vector>
 #include <atomic>
-#include <fstream>
 
 namespace tabedit {
 
@@ -25,9 +24,6 @@ class TabPlayer {
     std::vector<std::vector<Note>> notes;
 
     std::atomic_bool playing = false;
-    
-    // debug
-    std::ofstream debug;
     
     void play_string(int string, int min_time, int max_time, int tuning, int dt, float bpm);
 

@@ -34,6 +34,7 @@ private:
     bool save_entry_show = false;
     std::string save_entry_filename = "";
 
+
     void update_screen();
     unsigned int get_colorpair(point_t p, bool is_note) const;
     std::pair<int, int> convert_to_screen_coords(point_t p, bool& out_of_screen) const;
@@ -42,6 +43,9 @@ private:
     void update_selection();
 
 public:
+    int loop_start = 0;
+    int loop_end = 1000000;
+    
     TabDisplay(Tab& tab, WINDOW* win, Global& global);
     void move_cursor(int dy, int dx);
     void write(int n);

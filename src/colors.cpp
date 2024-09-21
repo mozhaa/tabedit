@@ -24,6 +24,8 @@ void init_colors() {
     init_color(C_ODD_1_BG, 200, 75, 259);
     init_color(C_ODD_2_BG, 140, 15, 199);
     init_color(C_BAR_EDGE_BG, 125, 199, 309);
+    init_color(C_LOOP_START_BG, 199, 209, 125);
+    init_color(C_LOOP_END_BG, 199, 209, 125);
 
     init_pair(CP_MAIN_1, C_FG, C_BG_1);
     init_pair(CP_MAIN_2, C_FG, C_BG_2);
@@ -50,6 +52,11 @@ void init_colors() {
     init_pair(CP_ODD_1_NOTE, C_PINK, C_ODD_1_BG);
     init_pair(CP_ODD_2, C_FG, C_ODD_2_BG);
     init_pair(CP_ODD_2_NOTE, C_PINK, C_ODD_2_BG);
+
+    init_pair(CP_LOOP_START, C_FG, C_LOOP_START_BG);
+    init_pair(CP_LOOP_START_NOTE, C_PINK, C_LOOP_START_BG);
+    init_pair(CP_LOOP_END, C_FG, C_LOOP_END_BG);
+    init_pair(CP_LOOP_END_NOTE, C_PINK, C_LOOP_END_BG);
 
     default_window(stdscr);
 }

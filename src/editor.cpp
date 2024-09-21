@@ -14,7 +14,7 @@ namespace tabedit {
 
 void run(std::string filename) {
     Tab tab(filename);
-	TabPlayer player("samples.bin", tab.strings);
+	TabPlayer player("guitar.bin", tab.strings);
 	initscr();
     raw();
     noecho();
@@ -46,7 +46,7 @@ void run(std::string filename) {
 			display.show_save_entry(new_filename);
 			break;
 		case 'p':
-			player.start(tab.notes, tab.tuning, tab.dt, tab.bpm);
+			player.start(tab.notes, tab.tuning, tab.dt, tab.bpm, display.loop_start, display.loop_end);
 			break;
 		case 'o':
 			player.stop();

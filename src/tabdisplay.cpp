@@ -74,6 +74,12 @@ unsigned int TabDisplay::get_colorpair(point_t p, bool is_note = false) const {
     if (p.in_between(cursor, selection_start) && mode == 1) {
         return (mode == 1) ? COLOR_PAIR(CP_HL_SELECTION) : COLOR_PAIR(CP_SELECTION);
     }
+    if (p.x == loop_start) {
+        return is_note ? COLOR_PAIR(CP_LOOP_START_NOTE) : COLOR_PAIR(CP_LOOP_START);
+    }
+    if (p.x == loop_end) {
+        return is_note ? COLOR_PAIR(CP_LOOP_END_NOTE) : COLOR_PAIR(CP_LOOP_END);
+    }
     if (p.x % tab.dt == 0) {
         return is_note ? COLOR_PAIR(CP_BAR_EDGE_NOTE) : COLOR_PAIR(CP_BAR_EDGE);
     }
@@ -260,6 +266,16 @@ void TabDisplay::handle_keypress(int c) {
             }
         } else if (mode == 2) {
             tab.copy_selected(selection);
+        }
+        break;
+    case 'z':
+        if (cursor.x < loop_end) {
+            loop_start = cursor.x;
+        }
+        break;
+    case 'x':
+        if (cursor.x > loop_start) {
+            loop_end = cursor.x;
         }
         break;
     }

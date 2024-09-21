@@ -269,13 +269,19 @@ void TabDisplay::handle_keypress(int c) {
         }
         break;
     case 'z':
-        if (cursor.x < loop_end) {
-            loop_start = cursor.x;
+        loop_start = cursor.x;
+        if (loop_end <= loop_start) {
+            loop_end = loop_start + tab.dt;
         }
         break;
     case 'x':
-        if (cursor.x > loop_start) {
-            loop_end = cursor.x;
+        loop_end = cursor.x;
+        if (loop_end == 0) {
+            loop_end = 1;
+            loop_start = 0;
+        } else if (loop_end <= loop_start) {
+            loop_start = std::max(0, loop_end - tab.dt);
+            loop_end = std::max(1, loop_end);
         }
         break;
     }

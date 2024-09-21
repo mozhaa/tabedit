@@ -116,6 +116,31 @@ std::string Tab::save() const {
     json data;
     data["strings"] = strings;
     data["dt"] = dt;
+    data["bpm"] = bpm;
+    std::vector<json> _tuning = {};
+    for (int i = 0; i < strings; ++i) {
+        int number = -1;
+        std::string letter;
+        int value = tuning[i];
+        bool found = false;
+        while (!found && number < 10) {
+            for (auto& [_letter, _number] : letters) {
+                if (_number == value) {
+                    letter = _letter;
+                    found = true;
+                    break;
+                }
+            }
+            ++number;
+            value -= 12;
+        }
+        if (!found) {
+            number = 5;
+            letter = "C";
+        }
+        _tuning.push_back({{"letter", letter}, {"number", number}});
+    }
+    data["tuning"] = _tuning;
     std::vector<json> _notes = {};
     for (auto note : notes) {
         json _note;

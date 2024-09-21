@@ -4,6 +4,7 @@
 #include "keybindings.h"
 #include "json.hpp"
 #include "global.h"
+#include "audio.h"
 #include "colors.h"
 #include <fstream>
 
@@ -13,6 +14,7 @@ namespace tabedit {
 
 void run(std::string filename) {
     Tab tab(filename);
+	TabPlayer player("soundfont.sf2", tab.strings);
 	initscr();
     raw();
     noecho();
@@ -42,6 +44,12 @@ void run(std::string filename) {
 			new_filename = display.get_new_filename();
 			tab.fork(new_filename);
 			display.show_save_entry(new_filename);
+			break;
+		case 'p':
+			player.start(tab.notes, std::vector<int>(tab.strings, 60), tab.dt, 40);
+			break;
+		case 'o':
+			player.stop();
 			break;
 		default:
 			display.handle_keypress(c);

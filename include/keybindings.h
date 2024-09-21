@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ncursesw/ncurses.h"
 
 namespace tabedit {

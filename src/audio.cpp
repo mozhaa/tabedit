@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include "tsf.h"
+#include <cstdio>
 
 namespace tabedit {
 
@@ -36,31 +36,20 @@ void TabPlayer::play_string(int string, int min_time, int max_time, int tuning, 
     }
 }
 
-TabPlayer::TabPlayer(std::string soundfont_filename, int strings) : strings(strings), threads(strings, nullptr) {
+TabPlayer::TabPlayer(std::string samples_filename, int strings) : strings(strings), threads(strings, nullptr) {
     debug = std::ofstream("debug.log");
-    tsf* soundfont = tsf_load_filename(soundfont_filename.c_str());
-    tsf_set_output(soundfont, TSF_MONO, SAMPLE_RATE, 0);
-    // pre-generate samples for whole note range
-    debug << "starting generating" << std::endl;
+    // read samples from binary file
     samples = std::vector<std::vector<sf::Int16>>(RANGE, std::vector<sf::Int16>(LENGTH, 0));
-    for (int i = 0; i < RANGE; ++i) {
-        tsf_note_on(soundfont, 0, i, 1.0f);
-        tsf_render_short(soundfont, samples[i].data(), LENGTH, 0);
+    FILE* samples_file = fopen(samples_filename.c_str(), "rb");
+    if (!samples_file) {
+        throw std::runtime_error("Error opening samples file " + samples_filename);
     }
-    debug << "ehm" << std::endl;
-    sf::Sound sound;
-    debug << "ad" << std::endl;
-    sf::SoundBuffer buffer;
-    debug << "start" << std::endl;
-    buffer.loadFromSamples(samples[60].data(), LENGTH, 1, SAMPLE_RATE);
-    debug << "lodade from samples" << std::endl;
-    sound.setBuffer(buffer);
-    debug << "set buffer" << std::endl;
-    sound.play();
-    debug << "sleeping 2000 ms" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(MILLISECONDS));
-    sound.stop();
-    debug << "Generated samples for whole note range" << std::endl;
+    for (std::size_t i = 0; i < RANGE; ++i) {
+        if (fread(samples[i].data(), sizeof(short), LENGTH, samples_file) != LENGTH) {
+            throw std::runtime_error("Error reading from samples file");
+        }
+    }
+    fclose(samples_file);
 }
 
 void TabPlayer::start(std::vector<Note> _notes, std::vector<int> tuning, int dt, int bpm, int min_time, int max_time) {

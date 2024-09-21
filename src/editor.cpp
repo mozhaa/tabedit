@@ -14,7 +14,7 @@ namespace tabedit {
 
 void run(std::string filename) {
     Tab tab(filename);
-	TabPlayer player("soundfont.sf2", tab.strings);
+	TabPlayer player("samples.bin", tab.strings);
 	initscr();
     raw();
     noecho();

@@ -2,3 +2,8 @@
 obj/
 tabedit
 *.json
+*.log
+*.sf2
+*.bin
+.gdb_history
+gen

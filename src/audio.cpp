@@ -8,34 +8,7 @@ namespace tabedit {
 
 #define sleep(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
-static int to_ms(int time, int dt, float bpm) {
-    return 4 * 60000.f * time / bpm / dt;
-}
-
-void TabPlayer::play_string(int string, int min_time, int max_time, int tuning, int dt, float bpm) {
-    if (notes[string].size() == 0) {
-        return;
-    }
-    sleep(to_ms(notes[string][0].time - min_time, dt, bpm));
-    for (std::size_t i = 0; i < notes[string].size() && playing; ++i) {
-        sf::Sound sound;
-        sf::SoundBuffer buffer;
-        auto note = notes[string][i];
-        buffer.loadFromSamples(samples[tuning + note.fret].data(), LENGTH, 1, SAMPLE_RATE);
-        sound.setBuffer(buffer);
-        sound.play();
-        if (i != notes[string].size() - 1) {
-            // wait till next note
-            sleep(to_ms(notes[string][i + 1].time - notes[string][i].time, dt, bpm));
-        } else {
-            // wait full note length
-            sleep(MILLISECONDS);
-        }
-        sound.stop();
-    }
-}
-
-TabPlayer::TabPlayer(std::string samples_filename, int strings) : strings(strings), threads(strings, nullptr) {
+TabPlayer::TabPlayer(std::string samples_filename, int strings) : strings(strings) {
     // read samples from binary file
     samples = std::vector<std::vector<sf::Int16>>(RANGE, std::vector<sf::Int16>(LENGTH, 0));
     FILE* samples_file = fopen(samples_filename.c_str(), "rb");
@@ -50,27 +23,48 @@ TabPlayer::TabPlayer(std::string samples_filename, int strings) : strings(string
     fclose(samples_file);
 }
 
-void TabPlayer::start(std::vector<Note> _notes, std::vector<int> tuning, int dt, float bpm, int min_time, int max_time) {
+void TabPlayer::start(std::vector<Note> notes, std::vector<int> tuning, int dt, float bpm, int min_time, int max_time, TabDisplay* display) {
     if (playing) {
         stop();
     }
-    notes = std::vector<std::vector<Note>>(strings, std::vector<Note>());
-    for (auto note : _notes) {
-        if (note.time <= max_time && note.time >= min_time) {
-            notes[note.string].push_back(note);
-        }
-    }
-    for (int i = 0; i < strings; ++i) {
-        std::sort(notes[i].begin(), notes[i].end(), [](const Note& x, const Note& y){
-            return x.time <= y.time;
-        });
-    }
+    std::sort(notes.begin(), notes.end(), [](const Note& x, const Note& y){
+        return x.time <= y.time;
+    });
     playing = true;
-    for (int i = 0; i < strings; ++i) {
-        threads[i] = new std::thread([this, i, min_time, max_time, &tuning, dt, bpm](){
-            return this->play_string(i, min_time, max_time, tuning[i], dt, bpm);
-        });
-    }
+    main_thread = new std::thread([this, notes, tuning, dt, bpm, min_time, max_time, display](){
+        std::vector<sf::Sound> sounds = std::vector<sf::Sound>(strings, sf::Sound());
+        std::vector<sf::SoundBuffer> buffers = std::vector<sf::SoundBuffer>(strings, sf::SoundBuffer());
+        auto note = notes.begin();
+        const int dt_ms = 4 * 60000.f / bpm / dt;
+        for (int time = min_time; time <= max_time; ++time) {
+            if (!playing) {
+                // stop everything
+                for (int i = 0; i < strings; ++i) {
+                    sounds[i].stop();
+                }
+                break;
+            }
+            while(note != notes.end() && note->time < time) {
+                // find next note
+                ++note;
+            }
+            if (note == notes.end()) {
+                // or we'd go into infinity
+                break;
+            }
+            if (note->time == time) {
+                // play note
+                sounds[note->string].stop();
+                buffers[note->string].loadFromSamples(samples[tuning[note->string] + note->fret].data(), LENGTH, 1, SAMPLE_RATE);
+                sounds[note->string].setBuffer(buffers[note->string]);
+                sounds[note->string].play();
+            }
+            display->update_play_cursor(time);
+            sleep(dt_ms);
+        }
+        playing = false;
+        display->update_play_cursor(-1);       
+    });
 }
 
 void TabPlayer::stop() {
@@ -78,11 +72,8 @@ void TabPlayer::stop() {
         return;
     }
     playing = false;
-    for (int i = 0; i < strings; ++i) {
-        threads[i]->join();
-        delete threads[i];
-    }
-    notes.clear();
+    main_thread->join();
+    delete main_thread;
 }
 
 }

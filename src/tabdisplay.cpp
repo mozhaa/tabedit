@@ -74,6 +74,9 @@ unsigned int TabDisplay::get_colorpair(point_t p, bool is_note = false) const {
     if (p.in_between(cursor, selection_start) && mode == 1) {
         return (mode == 1) ? COLOR_PAIR(CP_HL_SELECTION) : COLOR_PAIR(CP_SELECTION);
     }
+    if (p.x == play_cursor) {
+        return is_note ? COLOR_PAIR(CP_PLAYING_NOTE) : COLOR_PAIR(CP_PLAYING);
+    }
     if (p.x == loop_start) {
         return is_note ? COLOR_PAIR(CP_LOOP_START_NOTE) : COLOR_PAIR(CP_LOOP_START);
     }
@@ -108,6 +111,12 @@ static std::string repeat_n(std::string s, int n) {
         ss << s;
     }
     return ss.str();
+}
+
+void TabDisplay::update_play_cursor(int time) {
+    play_cursor = time;
+    show();
+    wrefresh(win);
 }
 
 void TabDisplay::show() {

@@ -26,6 +26,7 @@ namespace tabedit {
 #define C_BAR_EDGE_BG 19
 #define C_LOOP_START_BG 20
 #define C_LOOP_END_BG 21
+#define C_PLAYING 22
 
 // Named colors
 #define C_BG C_BW_0000
@@ -61,6 +62,8 @@ namespace tabedit {
 #define CP_LOOP_START_NOTE 24
 #define CP_LOOP_END 25
 #define CP_LOOP_END_NOTE 26
+#define CP_PLAYING 27
+#define CP_PLAYING_NOTE 28
 
 void init_colors();
 void default_window(WINDOW* win);

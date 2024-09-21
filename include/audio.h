@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tab.h"
+#include "tabdisplay.h"
 
 #include <SFML/Audio.hpp>
 #include <thread>
@@ -19,17 +20,15 @@ class TabPlayer {
     std::vector<std::vector<short>> samples;
 
     int strings;
-    std::vector<std::thread*> threads;
-    
-    std::vector<std::vector<Note>> notes;
+    std::vector<sf::Sound> sounds;
+    std::vector<sf::SoundBuffer> buffers;
 
     std::atomic_bool playing = false;
-    
-    void play_string(int string, int min_time, int max_time, int tuning, int dt, float bpm);
+    std::thread* main_thread;
 
 public:
     TabPlayer(std::string soundfont_filename, int strings);
-    void start(std::vector<Note> _notes, std::vector<int> tuning, int dt, float bpm, int min_time = 0, int max_time = 1000000);
+    void start(std::vector<Note> notes, std::vector<int> tuning, int dt, float bpm, int min_time, int max_time, TabDisplay* display);
     void stop();
 };
 

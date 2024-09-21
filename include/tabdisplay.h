@@ -45,6 +45,7 @@ private:
 public:
     int loop_start = 0;
     int loop_end = 1000000;
+    int play_cursor = -1;
     
     TabDisplay(Tab& tab, WINDOW* win, Global& global);
     void move_cursor(int dy, int dx);
@@ -54,6 +55,7 @@ public:
     void handle_keypress(int c);
     void show_save_entry(std::string filename);
     void toggle_select_mode();
+    void update_play_cursor(int time);
     std::string get_new_filename();
 };
 

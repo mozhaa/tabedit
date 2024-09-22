@@ -10,11 +10,12 @@ void show_usage() {
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "");
-    if (argc != 2) {
-        show_usage();
-        return 1;
+    string filename;
+    if (argc == 1) {
+        filename = "";
+    } else {
+        filename = argv[1];
     }
-    string filename = argv[1];
     tabedit::run(filename);
     return 0;
 }

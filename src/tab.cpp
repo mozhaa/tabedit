@@ -91,7 +91,51 @@ static std::map<std::string, int> letters = {
     {"Ab", 8}
 };
 
+static std::vector<int> convert_tuning(json data) {
+    auto _tuning = std::vector<int>(data.size(), 0);
+    for (nlohmann::basic_json<>::size_type i = 0; i < data.size(); ++i) {
+        std::string letter = data[i]["letter"];
+        int number = data[i]["number"];
+        _tuning[i] = letters[letter] + number * 12;
+    }
+    return _tuning;
+}
+
 Tab::Tab(std::string filename) : filename(filename) {
+    if (filename == "") {
+        filename = "new.json";
+        strings = 6;
+        dt = 16;
+        bpm = 100;
+        tuning = convert_tuning({
+            {
+                {"letter", "E"},
+                {"number", 4}
+            },
+            {
+                {"letter", "B"},
+                {"number", 4}
+            },
+            {
+                {"letter", "G"},
+                {"number", 3}
+            },
+            {
+                {"letter", "D"},
+                {"number", 3}
+            },
+            {
+                {"letter", "A"},
+                {"number", 3}
+            },
+            {
+                {"letter", "E"},
+                {"number", 2}
+            },
+        });
+        notes = {};
+        return;
+    }
     std::ifstream f(filename);
     if (f.fail()) {
         throw std::runtime_error("No such file: " + filename);
@@ -100,12 +144,7 @@ Tab::Tab(std::string filename) : filename(filename) {
     strings = data["strings"];
     dt = data["dt"];
     bpm = data["bpm"];
-    tuning = std::vector<int>(strings, 0);
-    for (int i = 0; i < strings; ++i) {
-        std::string letter = data["tuning"][i]["letter"];
-        int number = data["tuning"][i]["number"];
-        tuning[i] = letters[letter] + number * 12;
-    }
+    tuning = convert_tuning(data["tuning"]);
     notes = {};
     for (auto note : data["notes"]) {
         notes.push_back(Note(note["time"], note["string"], note["fret"]));

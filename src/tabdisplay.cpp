@@ -114,9 +114,11 @@ static std::string repeat_n(std::string s, int n) {
 }
 
 void TabDisplay::update_play_cursor(int time) {
+    play_cursor_lock.lock();
     play_cursor = time;
     show();
     wrefresh(win);
+    play_cursor_lock.unlock();
 }
 
 void TabDisplay::show() {

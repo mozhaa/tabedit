@@ -2,6 +2,7 @@
 
 #include "tab.h"
 #include "global.h"
+#include <mutex>
 #include <ncursesw/ncurses.h>
 
 namespace tabedit {
@@ -33,7 +34,7 @@ private:
 
     bool save_entry_show = false;
     std::string save_entry_filename = "";
-
+    std::mutex play_cursor_lock;
 
     void update_screen();
     unsigned int get_colorpair(point_t p, bool is_note) const;
